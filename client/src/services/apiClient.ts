@@ -11,7 +11,13 @@ export async function postTransaction(tx: Transaction): Promise<void> {
 
   if (!res.ok) {
     const body = await res.json().catch(() => ({}));
-    throw new Error(body?.error ?? `POST failed (${res.status})`);
+    if (body?.errors) {
+      const messages = Object.entries(body.errors as Record<string, string[]>)
+        .map(([field, msgs]) => `${field}: ${msgs.join(", ")}`)
+        .join(" | ");
+      throw new Error(messages);
+    }
+    throw new Error(body?.detail ?? body?.title ?? `Request failed (${res.status})`);
   }
 }
 

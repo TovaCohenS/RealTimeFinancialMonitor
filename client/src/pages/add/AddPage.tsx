@@ -6,12 +6,29 @@ import type { TransactionStatus } from "../../types/transactionStatus";
 
 const statuses: TransactionStatus[] = ["Pending", "Completed", "Failed"];
 
+function validate(amount: number, currency: string, status: string): string[] {
+  const errors: string[] = [];
+
+  if (amount <= 0) errors.push("Amount must be greater than 0.");
+  if (amount >= 1_000_000_000) errors.push("Amount must be less than 1 billion.");
+
+  const trimmedCurrency = currency.trim();
+  if (!trimmedCurrency) errors.push("Currency is required.");
+  else if (trimmedCurrency.length < 3 || trimmedCurrency.length > 8) errors.push("Currency must be 3–8 characters.");
+  else if (!/^[a-zA-Z]+$/.test(trimmedCurrency)) errors.push("Currency must be letters only (e.g., USD, EUR).");
+
+  if (!statuses.includes(status as TransactionStatus))
+    errors.push("Status must be one of: Pending, Completed, Failed.");
+
+  return errors;
+}
+
 export function AddPage() {
   const [amount, setAmount] = useState(1500.5);
   const [currency, setCurrency] = useState("USD");
   const [status, setStatus] = useState<TransactionStatus>("Pending");
   const [busy, setBusy] = useState(false);
-  const [message, setMessage] = useState<string>("");
+  const [message, setMessage] = useState<{ text: string; isError: boolean } | null>(null);
 
   const buildTx = (): Transaction => ({
     transactionId: uuid(),
@@ -22,30 +39,36 @@ export function AddPage() {
   });
 
   const sendOne = async () => {
+    const errors = validate(amount, currency, status);
+    if (errors.length) { setMessage({ text: errors.join("\n"), isError: true }); return; }
+
     setBusy(true);
-    setMessage("");
+    setMessage(null);
     try {
       const tx = buildTx();
       await postTransaction(tx);
-      setMessage("Sent!");
+      setMessage({ text: "Sent!", isError: false });
     } catch (e: any) {
-      setMessage(e?.message ?? "Failed");
+      setMessage({ text: e?.message ?? "Failed", isError: true });
     } finally {
       setBusy(false);
     }
   };
 
   const sendBurst = async (count: number) => {
+    const errors = validate(amount, currency, status);
+    if (errors.length) { setMessage({ text: errors.join("\n"), isError: true }); return; }
+
     setBusy(true);
-    setMessage("");
+    setMessage(null);
     try {
       for (let i = 0; i < count; i++) {
         const tx = buildTx();
         await postTransaction(tx);
       }
-      setMessage(`Sent ${count} transactions`);
+      setMessage({ text: `Sent ${count} transactions`, isError: false });
     } catch (e: any) {
-      setMessage(e?.message ?? "Failed");
+      setMessage({ text: e?.message ?? "Failed", isError: true });
     } finally {
       setBusy(false);
     }
@@ -94,7 +117,20 @@ export function AddPage() {
         </button>
       </div>
 
-      {message && <div style={{ padding: 8, border: "1px solid #ddd", borderRadius: 8 }}>{message}</div>}
+      {message && (
+        <div
+          style={{
+            padding: 8,
+            borderRadius: 8,
+            border: `1px solid ${message.isError ? "#f44336" : "#4caf50"}`,
+            color: message.isError ? "#f44336" : "#2e7d32",
+            background: message.isError ? "#fff5f5" : "#f5fff5",
+            whiteSpace: "pre-wrap",
+          }}
+        >
+          {message.isError ? "Error: " : ""}{message.text}
+        </div>
+      )}
     </div>
   );
 }
