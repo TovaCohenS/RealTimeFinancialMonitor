@@ -1,0 +1,17 @@
+﻿global using FluentValidation;
+global using Microsoft.EntityFrameworkCore;
+global using RealTimeFinancialMonitor;
+global using RealTimeFinancialMonitor.Contracts;
+global using RealTimeFinancialMonitor.Exceptions;
+global using RealTimeFinancialMonitor.Handlers;
+global using RealTimeFinancialMonitor.Routes;
+global using RealTimeFinancialMonitor.Services;
+global using RealTimeFinancialMonitor.Validators;
+global using Microsoft.AspNetCore.Http.HttpResults;
+global using RealTimeFinancialMonitor.Dtos;
+global using RealTimeFinancialMonitor.Models;
+global using System.Net.Mime;
+global using Microsoft.AspNetCore.Diagnostics;
+global using Microsoft.AspNetCore.Mvc;
+global using Microsoft.AspNetCore.SignalR;
+global using RealTimeFinancialMonitor.Enums;

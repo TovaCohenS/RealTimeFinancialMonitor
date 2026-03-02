@@ -1,0 +1,13 @@
+<Project>
+  <!-- These must be set before Microsoft.Common.props is imported (hence Directory.Build.props).
+       Only apply to the main API project, not the test project. -->
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'RealTimeFinancialMonitor'">
+    <BaseIntermediateOutputPath>C:\_o\rtfm_api\</BaseIntermediateOutputPath>
+    <BaseOutputPath>C:\_b\rtfm_api\</BaseOutputPath>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'RealTimeFinancialMonitor.Tests'">
+    <BaseIntermediateOutputPath>C:\_o\rtfm_tests\</BaseIntermediateOutputPath>
+    <BaseOutputPath>C:\_b\rtfm_tests\</BaseOutputPath>
+  </PropertyGroup>
+</Project>
