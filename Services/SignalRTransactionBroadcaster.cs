@@ -1,4 +1,6 @@
-﻿namespace RealTimeFinancialMonitor.Services;
+﻿using RealTimeFinancialMonitor.Hub;
+
+namespace RealTimeFinancialMonitor.Services;
 
 public sealed class SignalRTransactionBroadcaster : ITransactionBroadcaster
 {

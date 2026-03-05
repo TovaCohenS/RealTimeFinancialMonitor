@@ -21,14 +21,7 @@ public static class TransactionsRoutes
         var limitValue = limit.GetValueOrDefault(100);
         var entities = await repo.GetRecentAsync(limitValue, ct);
 
-        var dtos = entities.Select(x => new TransactionDto
-        {
-            TransactionId = x.TransactionGuid,
-            Amount = x.Amount,
-            Currency = x.Currency,
-            Status = x.Status.ToString(),
-            Timestamp = DateTime.SpecifyKind(x.Timestamp, DateTimeKind.Utc)
-        }).ToList();
+        var dtos = entities.Select(TransactionMapper.ToDto).ToList();
 
         return TypedResults.Ok(dtos);
     }
@@ -61,10 +54,10 @@ public static class TransactionsRoutes
         if (transaction is null)
             return TypedResults.NotFound();
 
-        // Create new record with updated status (record types are immutable)
+        
         var updatedTransaction = transaction with { Status = newStatus };
 
-        // This will throw ConcurrencyException if RowVersion doesn't match
+       
         await repo.UpdateAsync(updatedTransaction, ct);
 
         var dto = TransactionMapper.ToDto(updatedTransaction);
