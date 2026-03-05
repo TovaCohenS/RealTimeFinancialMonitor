@@ -12,15 +12,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove=".github\**" />
     <Compile Remove="docs\**" />
     <Compile Remove="Middlewares\**" />
     <Compile Remove="RealTimeFinancialMonitor.Tests\**\*.cs" />
+    <Content Remove=".github\**" />
     <Content Remove="docs\**" />
     <Content Remove="Middlewares\**" />
     <Content Remove="RealTimeFinancialMonitor.Tests\**\*" />
+    <EmbeddedResource Remove=".github\**" />
     <EmbeddedResource Remove="docs\**" />
     <EmbeddedResource Remove="Middlewares\**" />
     <EmbeddedResource Remove="RealTimeFinancialMonitor.Tests\**\*" />
+    <None Remove=".github\**" />
     <None Remove="docs\**" />
     <None Remove="Middlewares\**" />
     <None Remove="RealTimeFinancialMonitor.Tests\**\*" />
@@ -37,10 +41,6 @@
     <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.24" />
     <PackageReference Include="Microsoft.Extensions.Caching.StackExchangeRedis" Version="8.0.11" />
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.22.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <None Include=".github\workflows\ci-cd.yml" />
   </ItemGroup>
 
 </Project>
