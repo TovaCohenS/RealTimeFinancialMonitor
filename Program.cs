@@ -1,5 +1,3 @@
-
-
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddDbContext<AppDbContext>(opt =>
@@ -9,14 +7,31 @@ builder.Services.AddDbContext<AppDbContext>(opt =>
 });
 
 
-builder.Services.AddSignalR()
-    //.AddStackExchangeRedis("<>")
-    ;
+var cacheProvider = builder.Configuration["Cache:Provider"] ?? "InMemory";
+
+if (cacheProvider.Equals("Redis", StringComparison.OrdinalIgnoreCase))
+{
+    
+    builder.Services.AddStackExchangeRedisCache(options =>
+    {
+        options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
+        options.InstanceName = "RealTimeFinancialMonitor:";
+    });
+
+    
+    builder.Services.AddSignalR()
+        .AddStackExchangeRedis(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379");
+}
+else
+{
+    
+    builder.Services.AddDistributedMemoryCache();
+    builder.Services.AddSignalR();
+}
 
 builder.Services.AddScoped<ITransactionRepository, TransactionRepository>();
 builder.Services.AddScoped<ITransactionBroadcaster, SignalRTransactionBroadcaster>();
 builder.Services.AddScoped<ITransactionProcessor, TransactionProcessor>();
-
 
 builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 builder.Services.AddProblemDetails();
@@ -49,7 +64,6 @@ app.UseRouting();
 app.UseCors("dev");
 
 app.MapGet("/", () => Results.Ok(new { status = "ok" }));
-
 
 app.MapTransactionsRoutes();
 

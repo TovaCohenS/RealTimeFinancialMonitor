@@ -7,8 +7,8 @@ public static class TransactionsRoutes
             .WithTags("Transactions");
 
         group.MapPost("/", AddTransaction);
-
         group.MapGet("/recent", GetRecent);
+        group.MapPut("/{id}/status", UpdateTransactionStatus);
 
         return app;
     }
@@ -33,7 +33,7 @@ public static class TransactionsRoutes
         return TypedResults.Ok(dtos);
     }
 
-    static async Task<Results<ValidationProblem, Ok<AddTransactionReponse>>> AddTransaction(
+    static async Task<Results<ValidationProblem, Ok<AddTransactionResponse>>> AddTransaction(
             TransactionDto dto,
             IValidator<TransactionDto> validator,
             ITransactionProcessor processor,
@@ -46,8 +46,30 @@ public static class TransactionsRoutes
         }
 
         var tid = await processor.ProcessAsync(dto, ct);
-        return TypedResults.Ok(new AddTransactionReponse(tid));
+        return TypedResults.Ok(new AddTransactionResponse(tid));
     }
 
+    static async Task<Results<NotFound, Ok<TransactionDto>>> UpdateTransactionStatus(
+        long id,
+        TransactionStatus newStatus,
+        ITransactionRepository repo,
+        ITransactionBroadcaster broadcaster,
+        CancellationToken ct)
+    {
+        var transaction = await repo.GetByIdAsync(id, ct);
+        
+        if (transaction is null)
+            return TypedResults.NotFound();
 
+        // Create new record with updated status (record types are immutable)
+        var updatedTransaction = transaction with { Status = newStatus };
+
+        // This will throw ConcurrencyException if RowVersion doesn't match
+        await repo.UpdateAsync(updatedTransaction, ct);
+
+        var dto = TransactionMapper.ToDto(updatedTransaction);
+        await broadcaster.BroadcastAsync(dto, ct);
+
+        return TypedResults.Ok(dto);
+    }
 }

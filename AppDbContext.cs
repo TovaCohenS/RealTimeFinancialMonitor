@@ -33,12 +33,14 @@ public sealed class AppDbContext : DbContext
         t.Property(x => x.CreatedAtUtc)
          .IsRequired();
 
+        t.Property(x => x.RowVersion)
+         .IsRowVersion()
+         .IsConcurrencyToken();
+
         t.HasIndex(x => x.Timestamp);
 
         t.HasIndex(x => x.TransactionGuid)
          .IsUnique();
-
-       
 
         base.OnModelCreating(modelBuilder);
     }

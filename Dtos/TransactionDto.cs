@@ -9,4 +9,4 @@ public sealed record TransactionDto
     public required DateTime Timestamp { get; init; }
 }
 
-public sealed record AddTransactionReponse(Guid transactionID);
+public sealed record AddTransactionResponse(Guid transactionID);

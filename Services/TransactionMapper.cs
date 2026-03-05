@@ -17,6 +17,18 @@ public static class TransactionMapper
         };
     }
 
+    public static TransactionDto ToDto(Transaction entity)
+    {
+        return new TransactionDto
+        {
+            TransactionId = entity.TransactionGuid,
+            Amount = entity.Amount,
+            Currency = entity.Currency,
+            Status = entity.Status.ToString(),
+            Timestamp = DateTime.SpecifyKind(entity.Timestamp, DateTimeKind.Utc)
+        };
+    }
+
     private static TransactionStatus ParseStatus(string status)
     {
         return status.Trim() switch

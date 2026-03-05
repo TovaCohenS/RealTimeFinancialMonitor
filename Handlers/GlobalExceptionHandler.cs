@@ -24,6 +24,7 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
         {
             TransactionValidationException ex => HandleValidationException(ex, traceId),
             DuplicateTransactionException ex => HandleDuplicateTransaction(ex, traceId),
+            ConcurrencyException ex => HandleConcurrencyException(ex, traceId),
             InvalidOperationException ex => HandleInvalidOperation(ex, traceId),
             ArgumentException ex => HandleArgumentException(ex, traceId),
             _ => HandleUnexpectedException(exception, traceId)
@@ -75,6 +76,20 @@ public sealed class GlobalExceptionHandler : IExceptionHandler
             "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.9",
             traceId,
             "DUPLICATE_TRANSACTION"
+        );
+    }
+
+    private ProblemDetails HandleConcurrencyException(ConcurrencyException ex, string traceId)
+    {
+        _logger.LogWarning(ex, "Concurrency conflict: {Message}. TraceId: {TraceId}", ex.Message, traceId);
+
+        return CreateProblemDetails(
+            StatusCodes.Status409Conflict,
+            "Concurrency Conflict",
+            ex.Message,
+            "https://datatracker.ietf.org/doc/html/rfc9110#section-15.5.9",
+            traceId,
+            "CONCURRENCY_CONFLICT"
         );
     }
 

@@ -9,4 +9,5 @@ public sealed record Transaction
     public TransactionStatus Status { get; set; }
     public DateTime Timestamp { get; set; }
     public DateTime CreatedAtUtc { get; set; } = DateTime.UtcNow;
+    public byte[]? RowVersion { get; set; }
 }

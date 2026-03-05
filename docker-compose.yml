@@ -1,0 +1,113 @@
+version: '3.8'
+
+services:
+  # Shared Redis instance - ALL app instances ct to this
+  redis:
+    image: redis:7-alpine
+    container_name: rtfm-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - rtfm-network
+
+  # App Instance 1
+  app1:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rtfm-app1
+    ports:
+      - "5001:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Sqlite=Data Source=/app/data/transactions.db
+      - ConnectionStrings__Redis=redis:6379
+      - Cache__Provider=Redis
+      - INSTANCE_NAME=App1
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - app-data:/app/data
+    restart: unless-stopped
+    networks:
+      - rtfm-network
+
+  # App Instance 2 (shares same Redis and Database)
+  app2:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rtfm-app2
+    ports:
+      - "5002:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Sqlite=Data Source=/app/data/transactions.db
+      - ConnectionStrings__Redis=redis:6379
+      - Cache__Provider=Redis
+      - INSTANCE_NAME=App2
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - app-data:/app/data
+    restart: unless-stopped
+    networks:
+      - rtfm-network
+
+  # App Instance 3 (shares same Redis and Database)
+  app3:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: rtfm-app3
+    ports:
+      - "5003:8080"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__Sqlite=Data Source=/app/data/transactions.db
+      - ConnectionStrings__Redis=redis:6379
+      - Cache__Provider=Redis
+      - INSTANCE_NAME=App3
+    depends_on:
+      redis:
+        condition: service_healthy
+    volumes:
+      - app-data:/app/data
+    restart: unless-stopped
+    networks:
+      - rtfm-network
+
+  # Load Balancer (optional - simulates production)
+  nginx:
+    image: nginx:alpine
+    container_name: rtfm-nginx
+    ports:
+      - "5000:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - app1
+      - app2
+      - app3
+    restart: unless-stopped
+    networks:
+      - rtfm-network
+
+volumes:
+  redis-data:
+  app-data:
+
+networks:
+  rtfm-network:
+    driver: bridge
