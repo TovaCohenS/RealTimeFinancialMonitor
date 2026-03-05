@@ -11,7 +11,7 @@
  *   useEffect(() => { start(); return () => { stop(); }; }, []);
  */
 
-import { useRef, useState, useCallback } from "react";
+import { useRef, useCallback } from "react";
 import * as signalR from "@microsoft/signalr";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../stores/store";
