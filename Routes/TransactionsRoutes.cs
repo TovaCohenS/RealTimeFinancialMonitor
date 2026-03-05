@@ -8,7 +8,7 @@ public static class TransactionsRoutes
 
         group.MapPost("/", AddTransaction);
         group.MapGet("/recent", GetRecent);
-        group.MapPut("/{id}/status", UpdateTransactionStatus);
+        group.MapPut("/{transactionGuid}/status", UpdateTransactionStatus);
 
         return app;
     }
@@ -50,13 +50,13 @@ public static class TransactionsRoutes
     }
 
     static async Task<Results<NotFound, Ok<TransactionDto>>> UpdateTransactionStatus(
-        long id,
+        Guid transactionGuid,
         TransactionStatus newStatus,
         ITransactionRepository repo,
         ITransactionBroadcaster broadcaster,
         CancellationToken ct)
     {
-        var transaction = await repo.GetByIdAsync(id, ct);
+        var transaction = await repo.GetByGuidAsync(transactionGuid, ct);
         
         if (transaction is null)
             return TypedResults.NotFound();

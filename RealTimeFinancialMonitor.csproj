@@ -12,12 +12,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="docs\**" />
     <Compile Remove="Middlewares\**" />
     <Compile Remove="RealTimeFinancialMonitor.Tests\**\*.cs" />
+    <Content Remove="docs\**" />
     <Content Remove="Middlewares\**" />
     <Content Remove="RealTimeFinancialMonitor.Tests\**\*" />
+    <EmbeddedResource Remove="docs\**" />
     <EmbeddedResource Remove="Middlewares\**" />
     <EmbeddedResource Remove="RealTimeFinancialMonitor.Tests\**\*" />
+    <None Remove="docs\**" />
     <None Remove="Middlewares\**" />
     <None Remove="RealTimeFinancialMonitor.Tests\**\*" />
   </ItemGroup>
