@@ -1,6 +1,6 @@
 import type { Transaction } from "../types/transaction";
 
-const BASE_URL = import.meta.env.VITE_API_BASE_URL;
+const BASE_URL = import.meta.env.VITE_API_BASE_URL || "";
 
 export async function postTransaction(tx: Transaction): Promise<void> {
   const res = await fetch(`${BASE_URL}/api/transactions`, {

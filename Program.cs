@@ -1,4 +1,5 @@
-using RealTimeFinancialMonitor.Hub;
+
+using RealTimeFinancialMonitor.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -13,20 +14,20 @@ var cacheProvider = builder.Configuration["Cache:Provider"] ?? "InMemory";
 
 if (cacheProvider.Equals("Redis", StringComparison.OrdinalIgnoreCase))
 {
-    
+
     builder.Services.AddStackExchangeRedisCache(options =>
     {
         options.Configuration = builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379";
         options.InstanceName = "RealTimeFinancialMonitor:";
     });
 
-    
+
     builder.Services.AddSignalR()
         .AddStackExchangeRedis(builder.Configuration.GetConnectionString("Redis") ?? "localhost:6379");
 }
 else
 {
-    
+
     builder.Services.AddDistributedMemoryCache();
     builder.Services.AddSignalR();
 }
@@ -43,7 +44,7 @@ builder.Services.AddCors(opt =>
 {
     opt.AddPolicy("dev", p =>
     {
-        p.WithOrigins("http://localhost:5173")
+        p.SetIsOriginAllowed(o => true)
          .AllowAnyHeader()
          .AllowAnyMethod()
          .AllowCredentials();

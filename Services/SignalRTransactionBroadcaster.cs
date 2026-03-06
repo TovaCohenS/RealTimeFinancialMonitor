@@ -1,4 +1,4 @@
-﻿using RealTimeFinancialMonitor.Hub;
+﻿using RealTimeFinancialMonitor.Hubs;
 
 namespace RealTimeFinancialMonitor.Services;
 

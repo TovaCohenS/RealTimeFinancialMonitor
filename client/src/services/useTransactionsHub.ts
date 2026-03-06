@@ -11,7 +11,7 @@
  *   useEffect(() => { start(); return () => { stop(); }; }, []);
  */
 
-import { useRef, useCallback } from "react";
+import { useRef,  useCallback } from "react";
 import * as signalR from "@microsoft/signalr";
 import { useDispatch } from "react-redux";
 import type { AppDispatch } from "../stores/store";
@@ -19,7 +19,7 @@ import { addBatch, setConnectionStatus } from "../stores/transactions/transactio
 import type { Transaction } from "../types/transaction";
 import type { HubConnectionStatus } from "./signalRService";
 
-const HUB_URL = import.meta.env.VITE_HUB_URL as string;
+const HUB_URL = import.meta.env.VITE_HUB_URL || "/hubs/transactions";
 const FLUSH_INTERVAL_MS = 100;
 
 export function useTransactionsHub() {

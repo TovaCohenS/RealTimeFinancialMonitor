@@ -100,7 +100,7 @@ export type TransactionsHubOptions = {
         }
     }
 }
-export default new TransactionsHubService(import.meta.env.VITE_HUB_URL as string, {
+export default new TransactionsHubService(import.meta.env.VITE_HUB_URL || "/hubs/transactions", {
     onBatch: (txs) => store.dispatch(addBatch(txs)),
     onStatusChange: (status) => store.dispatch(setConnectionStatus(status)),
 });
