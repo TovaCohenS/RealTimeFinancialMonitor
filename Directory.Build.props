@@ -1,11 +1,6 @@
 <Project>
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'RealTimeFinancialMonitor'">
+  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'RealTimeFinancialMonitor' AND '$(OS)' == 'Windows_NT'">
     <BaseIntermediateOutputPath>C:\_o\rtfm_api\</BaseIntermediateOutputPath>
     <BaseOutputPath>C:\_b\rtfm_api\</BaseOutputPath>
-  </PropertyGroup>
-
-  <PropertyGroup Condition="'$(MSBuildProjectName)' == 'RealTimeFinancialMonitor.Tests'">
-    <BaseIntermediateOutputPath>C:\_o\rtfm_tests\</BaseIntermediateOutputPath>
-    <BaseOutputPath>C:\_b\rtfm_tests\</BaseOutputPath>
   </PropertyGroup>
 </Project>
